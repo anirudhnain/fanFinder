@@ -1,0 +1,32 @@
+{% load bootstrap3 %}
+{% load static %}
+
+<html>
+	<head>
+	<title>This is my web app!</title>
+	{% bootstrap_css %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="{% static "js/jquery.cookie/jquery.cookie.js" %}"></script>
+    {% bootstrap_javascript %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static "tweep/style.css" %}" />
+	</head>
+	<body>
+	<div class="container">
+    <div class="row">
+    <h2>Tweepy</h2>
+        <div class="span12">
+            <form id="custom-search-form" class="form-search form-horizontal pull-left" action="/search/" method="get" >
+                <div class="input-append span12">
+                    <input type="text" class="search-query mac-style" placeholder="Search" name="q">
+                    <button type="submit" class="btn"><i class="icon-search"></i></button>
+                    <input type="submit" class="mac-style" value="Submit">
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+	{% block content %}
+	{% endblock %}
+	</body>
+</html>
