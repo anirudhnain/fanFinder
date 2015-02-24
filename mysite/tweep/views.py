@@ -30,6 +30,15 @@ def search(request):
 
 		user_name=str(request.GET['q'])
 		
+		graph.cypher.execute("MERGE (user:Person {name:'"+user.screen_name+"' , id:'"+user.id_str+"' , statuses_count :'"+str(user.statuses_count)+"'})")
+		for tweet in tweepy.Cursor(api.user_timeline,screen_name=user_name).items(10):
+			if tweet.retweet_count:
+				retweet=api.retweets(tweet.id,10)
+				for retweets in retweet:
+					text=retweets.text.encode('ascii', errors='ignore')
+					graph.cypher.execute("MATCH (owner:Person {name:'"+user.screen_name+"' , id:'"+user.id_str+"', statuses_count :'"+str(user.statuses_count)+"'}) MERGE (tweet:Tweets {text:'"+text.decode('ascii').replace("'", "\\'")+"' , id:'"+tweet.id_str+"'})  MERGE (user:Person {name:'"+retweets.user.screen_name+"' , id:'"+retweets.user.id_str+"', statuses_count :'"+str(retweets.user.statuses_count)+"'}) MERGE(owner)-[:followed_by]->(user) MERGE (user)-[:"+user.screen_name+"tweets]->(tweet)")
+
+
 		max_follow=graph.cypher.execute("MATCH (n)-[r:"+user_name+"tweets]->(x) WITH n, count(r) as tweet WITH max(tweet) as maxi MATCH (n)-[r:"+user_name+"tweets]->(x) With n,count(r) as counted,maxi where counted=maxi return n.name,n.id,n.statuses_count")
 
 		i=0
